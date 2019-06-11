@@ -1,0 +1,111 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template/default.xhtml">
+	<ui:define name="titulo">Cliente</ui:define>
+	<ui:define name="content">
+
+		<h:form id="frmPrincipal" enctype="multipart/form-data">
+			<p:growl id="messages" />
+
+			<p:panel id="pnlCadastro" header="Cadastro de Cliente" style="width:600px" rendered="#{clienteBean.cliente != null}">
+				<p:panelGrid columns="2">
+					<h:outputLabel value="Nome:" />
+					<p:inputText value="#{clienteBean.cliente.nome}" required="true" requiredMessage="Campo obrigatório!" validatorMessage="Entre 3 e 100">
+						<f:validateLength minimum="3" maximum="100" />
+					</p:inputText>
+					<h:outputLabel value="Sobrenome:" />
+					<p:inputText value="#{clienteBean.cliente.sobrenome}" required="true" requiredMessage="Campo obrigatório!" validatorMessage="Entre 3 e 100">
+						<f:validateLength minimum="3" maximum="100" />
+					</p:inputText>
+
+					<h:outputLabel value="CPF:" />
+					<p:inputMask value="#{clienteBean.cliente.cpf}" mask="999.999.999-99" size="12" />
+
+					<h:outputLabel value="Data Nascimento:" />
+					<p:calendar value="#{clienteBean.cliente.nascimento}" pattern="dd/MM/yyyy" converter="localDateConverter" maxdate="#{clienteBean.now}" yearRange="1900:2030" />
+
+					<h:outputLabel value="Email:" />
+					<p:inputText value="#{clienteBean.cliente.email}" required="true" size="45" requiredMessage="Campo obrigatório!" validatorMessage="Formato do email inválido">
+						<f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+					</p:inputText>
+
+					<h:outputLabel value="Telefone:" />
+					<p:inputMask value="#{clienteBean.cliente.telefone}" mask="(99) 99999-9999" size="12" />
+
+					<h:outputLabel value="Endereço:" />
+					<p:inputText value="#{clienteBean.cliente.endereco}" required="true" size="45" requiredMessage="Campo obrigatório!" validatorMessage="Entre 3 e 100">
+						<f:validateLength minimum="3" maximum="100" />
+					</p:inputText>
+
+					<h:outputLabel value="Sexo:" />
+					<p:selectOneMenu value="#{clienteBean.cliente.sexo}" style="width:125px">
+						<f:selectItem itemLabel="Masculino" itemValue="M" />
+						<f:selectItem itemLabel="Feminino" itemValue="F" />
+					</p:selectOneMenu>
+
+					<h:outputLabel value="Profissão:" />
+					<p:inputText value="#{clienteBean.cliente.profissao}" validatorMessage="Entre 3 e 100">
+						<f:validateLength minimum="3" maximum="30" />
+					</p:inputText>
+
+					<h:outputLabel value="Estado Civil:" />
+					<p:selectOneMenu value="#{clienteBean.cliente.estadoCivil}" style="width:125px">
+						<f:selectItem itemLabel="Solteiro" itemValue="Solteiro" />
+						<f:selectItem itemLabel="Casado" itemValue="Casado" />
+						<f:selectItem itemLabel="Separado" itemValue="Separado" />
+						<f:selectItem itemLabel="Divorciado" itemValue="Divorciado" />
+						<f:selectItem itemLabel="Viúvo" itemValue="Viúvo" />
+					</p:selectOneMenu>
+				</p:panelGrid>
+
+				<p:commandButton id="btnSalvar" icon="salvar-icon" value="Salvar" action="#{clienteBean.salvar()}" update="frmPrincipal">
+					<span class="fa-icon-save" />
+				</p:commandButton>
+				<p:commandButton icon="voltar-icon" value="Voltar" action="#{clienteBean.voltar()}" immediate="true" update="frmPrincipal" />
+			</p:panel>
+			<p:blockUI block="pnlCadastro" trigger="btnSalvar" />
+
+			<p:panel header="Lista de Cliente" rendered="#{clienteBean.cliente == null}">
+				<p:commandButton value="Novo Cliente" icon="adicionar-icon" action="#{clienteBean.adicionar()}" update="frmPrincipal" />
+
+				<p:dataTable id="dtbCliente" value="#{clienteBean.clientes}" var="item" filteredValue="#{clienteBean.clientesFiltrado}" paginator="true" rows="5"
+					paginatorPosition="bottom" rowsPerPageTemplate="5,10,15">
+					<p:column headerText="Código" width="150">
+						<h:outputText value="#{item.id}" />
+					</p:column>
+					<p:column headerText="Nome" filterMatchMode="contains" sortBy="#{item.nome}" filterBy="#{item.nome}">
+						<h:outputText value="#{item.nome} #{item.sobrenome}" />
+					</p:column>
+					<p:column headerText="CPF">
+						<h:outputText value="#{item.cpf}" />
+					</p:column>
+					<p:column headerText="Data Nascimento">
+						<h:outputText value="#{item.nascimento}" />
+					</p:column>
+					<p:column headerText="Endereço">
+						<h:outputText value="#{item.endereco}" />
+					</p:column>
+					<p:column headerText="Sexo">
+						<h:outputText value="#{item.sexo}" />
+					</p:column>
+					<p:column headerText="Profissão">
+						<h:outputText value="#{item.profissao}" />
+					</p:column>
+					<p:column headerText="Estado Civil">
+						<h:outputText value="#{item.estadoCivil}" />
+					</p:column>
+					<p:column headerText="Ação" style="text-align:center;" width="150" exportable="false">
+						<p:commandButton icon="editar-icon" action="#{clienteBean.editar(item)}" update="frmPrincipal" />
+						<p:commandButton icon="excluir-icon" style="color:red; margin-left:20px;" actionListener="#{clienteBean.selecionarExcluir(item)}"
+							oncomplete="PF('dlgExcluir').show();" update="frmPrincipal" />
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+
+			<p:confirmDialog message="Deseja realmente excluir o cliente: #{clienteBean.clienteExcluir.nome}?" widgetVar="dlgExcluir">
+				<p:commandButton value="Sim" update="frmPrincipal" oncomplete="PF('dlgExcluir').hide();" action="#{clienteBean.excluir()}" />
+				<p:commandButton value="Não" oncomplete="PF('dlgExcluir').hide();" />
+			</p:confirmDialog>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

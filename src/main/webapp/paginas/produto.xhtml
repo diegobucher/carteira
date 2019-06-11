@@ -1,0 +1,100 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template/default.xhtml">
+	<ui:define name="titulo">Produto</ui:define>
+	<ui:define name="content">
+
+		<h:form id="frmPrincipal" enctype="multipart/form-data">
+			<p:growl id="messages" />
+
+			<p:panel id="pnlCadastro" header="Cadastro de Produto" style="width:600px" rendered="#{produtoBean.produto != null}">
+				<p:panelGrid columns="2">
+					<h:outputLabel value="Descrição:" />
+					<p:inputText value="#{produtoBean.produto.descricao}" size="30" required="true" requiredMessage="Campo obrigatório!" validatorMessage="Entre 3 e 50">
+						<f:validateLength minimum="3" maximum="50" />
+					</p:inputText>
+
+					<h:outputLabel value="Marca:" />
+					<p:selectOneMenu value="#{produtoBean.produto.marca}" style="width:125px">
+						<f:selectItem itemLabel="Amstel" itemValue="Amstel" />
+						<f:selectItem itemLabel="Antarctica" itemValue="Antarctica" />
+						<f:selectItem itemLabel="Bohemia" itemValue="Bohemia" />
+						<f:selectItem itemLabel="Brahma" itemValue="Brahma" />
+						<f:selectItem itemLabel="Budweiser" itemValue="Budweiser" />
+						<f:selectItem itemLabel="Devassa" itemValue="Devassa" />
+						<f:selectItem itemLabel="Heineken" itemValue="Heineken" />
+						<f:selectItem itemLabel="Itaipava" itemValue="Itaipava" />
+						<f:selectItem itemLabel="Schin" itemValue="Schin" />
+						<f:selectItem itemLabel="Skol" itemValue="Skol" />
+					</p:selectOneMenu>
+
+					<h:outputLabel value="Embalagem:" />
+					<p:selectOneMenu value="#{produtoBean.produto.embalagem}" style="width:125px">
+						<f:selectItem itemLabel="Lata 269 ml" itemValue="Lata 269 ml" />
+						<f:selectItem itemLabel="Lata 350 ml" itemValue="Lata 350 ml" />
+						<f:selectItem itemLabel="Lata 473 ml" itemValue="Lata 473 ml" />
+						<f:selectItem itemLabel="Garrafa Long Neck 275 ml" itemValue="Garrafa Long Neck 275 ml" />
+						<f:selectItem itemLabel="Garrafa Long Neck 355 ml" itemValue="Garrafa Long Neck 355 ml" />
+						<f:selectItem itemLabel="Garrafa 600 ml" itemValue="Garrafa 600 ml" />
+					</p:selectOneMenu>
+
+					<h:outputLabel value="Tipo:" />
+					<p:selectOneMenu value="#{produtoBean.produto.tipo}" style="width:125px">
+						<f:selectItem itemLabel="Lager" itemValue="Lager" />
+						<f:selectItem itemLabel="Pilsen" itemValue="Pilsen" />
+						<f:selectItem itemLabel="Bock" itemValue="Bock" />
+						<f:selectItem itemLabel="Ale" itemValue="Ale" />
+						<f:selectItem itemLabel="Weissbier" itemValue="Weissbier" />
+					</p:selectOneMenu>
+
+					<h:outputLabel value="Preço:" />
+					<p:inputNumber id="inbPreco" value="#{produtoBean.produto.preco}" size="10" decimalSeparator="," thousandSeparator=".">
+						<p:ajax update="inbPreco" />
+					</p:inputNumber>
+				</p:panelGrid>
+
+				<p:commandButton id="btnSalvar" icon="salvar-icon" value="Salvar" action="#{produtoBean.salvar()}" update="frmPrincipal">
+					<span class="fa-icon-save" />
+				</p:commandButton>
+				<p:commandButton icon="voltar-icon" value="Voltar" action="#{produtoBean.voltar()}" immediate="true" update="frmPrincipal" />
+			</p:panel>
+			<p:blockUI block="pnlCadastro" trigger="btnSalvar" />
+
+			<p:panel header="Lista de Produto" rendered="#{produtoBean.produto == null}">
+				<p:commandButton value="Novo Produto" icon="adicionar-icon" action="#{produtoBean.adicionar()}" update="frmPrincipal" />
+
+				<p:dataTable id="dtbLista" value="#{produtoBean.produtos}" var="item" filteredValue="#{produtoBean.produtosFiltrado}" paginator="true" rows="5"
+					paginatorPosition="bottom" rowsPerPageTemplate="5,10,15">
+					<p:column headerText="Código" width="150">
+						<h:outputText value="#{item.id}" />
+					</p:column>
+					<p:column headerText="Descrição" filterMatchMode="contains" sortBy="#{item.descricao}" filterBy="#{item.descricao}">
+						<h:outputText value="#{item.descricao}" />
+					</p:column>
+					<p:column headerText="Marca">
+						<h:outputText value="#{item.marca}" />
+					</p:column>
+					<p:column headerText="Embalagem">
+						<h:outputText value="#{item.embalagem}" />
+					</p:column>
+					<p:column headerText="Tipo">
+						<h:outputText value="#{item.tipo}" />
+					</p:column>
+					<p:column headerText="Preço">
+						<h:outputText value="#{item.preco}" />
+					</p:column>
+					<p:column headerText="Ação" style="text-align:center;" width="150" exportable="false">
+						<p:commandButton icon="editar-icon" action="#{produtoBean.editar(item)}" update="frmPrincipal" />
+						<p:commandButton icon="excluir-icon" style="color:red; margin-left:20px;" actionListener="#{produtoBean.selecionarExcluir(item)}"
+							oncomplete="PF('dlgExcluir').show();" update="frmPrincipal" />
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+
+			<p:confirmDialog message="Deseja realmente excluir o produto: #{produtoBean.produtoExcluir.descricao}?" widgetVar="dlgExcluir">
+				<p:commandButton value="Sim" update="frmPrincipal" oncomplete="PF('dlgExcluir').hide();" action="#{produtoBean.excluir()}" />
+				<p:commandButton value="Não" oncomplete="PF('dlgExcluir').hide();" />
+			</p:confirmDialog>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

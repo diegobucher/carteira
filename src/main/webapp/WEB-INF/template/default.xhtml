@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta charset="UTF-8" />
+	<title>Carteira Representante Cerveja - <ui:insert name="titulo" /></title>
+	<meta name="description" content="Projeto Base" />
+	<meta name="keywords" content="JSF, CDI, Java" />
+	<meta name="author" content="Diego Bucher" />
+	<h:outputStylesheet library="css" name="bootstrap.min.css" />
+	<h:outputStylesheet library="css" name="tema.css" />
+</h:head>
+
+<h:body>
+	<h:form>
+		<p:growl id="messages" />
+
+		<p:menubar>
+			<p:submenu label="Cadastro" icon="ui-icon-document">
+				<p:menuitem value="Cliente" outcome="/paginas/cliente.xhtml" />
+				<p:menuitem value="Produto" outcome="/paginas/produto.xhtml" />
+				<p:menuitem value="Pedido" />
+				<p:menuitem value="Usuário" />
+			</p:submenu>
+
+			<p:submenu label="Relatório" icon="ui-icon-clipboard">
+				<p:menuitem value="Pedido" />
+			</p:submenu>
+
+			<p:submenu label="Ajuda" icon="ui-icon-help">
+				<p:menuitem value="Sobre" url="#" onclick="PF('dlg').show();" />
+			</p:submenu>
+
+			<p:menuitem value="Sair" url="https://github.com/diegobucher?tab=repositories" icon="ui-icon-close" />
+		</p:menubar>
+	</h:form>
+
+	<ui:insert name="content">
+	</ui:insert>
+
+	<p:dialog header="Sobre" widgetVar="dlg" showEffect="explode" hideEffect="bounce" height="140">
+		<h:outputText value="Desenvolvedores: Diego Bucher | Jair Candinho Junior" />
+		<br />
+		<h:outputText value="Sugestão ou dúvida nos encaminhe um e-mail:" />
+		<br />
+		<h:outputText value="diegobucher@gmail.com | jaircandinho@gmail.com" />
+		<br />
+		<br />
+		<h:outputText value="Projeto realizado para disciplina Seminário Interdisciplinar V" />
+		<br />
+		<h:outputText value="Tutor da turma: Jean Daniel Bornhofen" />
+	</p:dialog>
+
+	<h:outputScript library="primefaces" name="jquery/jquery.js" />
+	<h:outputScript library="js" name="bootstrap.min.js" />
+</h:body>
+</html>
