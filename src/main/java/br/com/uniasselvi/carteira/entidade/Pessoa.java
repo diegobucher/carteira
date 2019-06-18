@@ -1,11 +1,15 @@
 package br.com.uniasselvi.carteira.entidade;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "pessoa")
 public class Pessoa extends Entidade {
 	private static final long serialVersionUID = 6227684454612187237L;
 
@@ -44,6 +48,9 @@ public class Pessoa extends Entidade {
 
 	@Column(nullable = false)
 	private Boolean ativo = Boolean.TRUE;
+
+	@OneToMany(mappedBy = "cliente")
+	private List<Pedido> pedidos;
 
 	public String getCpf() {
 		return cpf;
@@ -139,6 +146,14 @@ public class Pessoa extends Entidade {
 
 	public void setAtivo(Boolean ativo) {
 		this.ativo = ativo;
+	}
+
+	public List<Pedido> getPedidos() {
+		return pedidos;
+	}
+
+	public void setPedidos(List<Pedido> pedidos) {
+		this.pedidos = pedidos;
 	}
 
 }

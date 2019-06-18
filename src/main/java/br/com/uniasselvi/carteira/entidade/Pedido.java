@@ -7,10 +7,15 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "pedido")
+@NamedQuery(name = "Pedido.buscarPorNome", query = "select p from Pedido p where p.cliente.nome like :nome")
 public class Pedido extends Entidade {
 	private static final long serialVersionUID = 8782375727696566321L;
 
@@ -24,12 +29,12 @@ public class Pedido extends Entidade {
 	@JoinColumn(name = "cliente_id", nullable = false)
 	private Pessoa cliente;
 
-	@OneToMany(mappedBy = "pedido")
-	@Column(nullable = false)
+	@ManyToMany
+	@JoinTable(name = "pedido_produto", joinColumns = { @JoinColumn(name = "pedido_id") }, inverseJoinColumns = { @JoinColumn(name = "produto_id") })
 	private List<Produto> produtos;
 
 	@Column(nullable = false)
-	private char situacao = 'A';
+	private char situacao;
 
 	@Column(name = "valor_total", nullable = false)
 	private Double valorTotal;

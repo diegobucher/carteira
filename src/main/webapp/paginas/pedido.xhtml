@@ -1,0 +1,111 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template/default.xhtml">
+	<ui:define name="titulo">Pedido</ui:define>
+	<ui:define name="content">
+
+		<h:form id="frmPrincipal" enctype="multipart/form-data">
+			<p:growl id="messages" />
+
+			<p:panel id="pnlCadastro" header="Cadastro de Pedido" style="width:600px" rendered="#{pedidoBean.pedido != null}">
+				<p:panelGrid columns="2">
+					<h:outputLabel value="Data Entrega:" />
+					<p:calendar value="#{pedidoBean.pedido.dataEntrega}" pattern="dd/MM/yyyy" converter="localDateConverter" mindate="#{pedidoBean.now}" yearRange="2000:2030" />
+
+					<h:outputLabel value="Cliente:" />
+					<p:selectOneMenu value="#{pedidoBean.pedido.cliente}" converter="entityConverter" required="true" requiredMessage="Campo obrigatório!" style="width:125px">
+						<f:selectItem itemLabel="Selecione" itemValue="#{null}" />
+						<f:selectItems value="#{pedidoBean.clientes}" var="item" itemLabel="#{item.nome} #{item.sobrenome}" itemValue="#{item}" />
+					</p:selectOneMenu>
+
+					<h:outputLabel value="Situação:" />
+					<p:selectOneMenu value="#{pedidoBean.pedido.situacao}" style="width:125px">
+						<f:selectItem itemLabel="Aberto" itemValue="A" />
+						<f:selectItem itemLabel="Preparação" itemValue="P" />
+						<f:selectItem itemLabel="Pronto para despache" itemValue="D" />
+						<f:selectItem itemLabel="Entregue" itemValue="E" />
+						<f:selectItem itemLabel="Cancelado" itemValue="C" />
+						<f:selectItem itemLabel="Fechado" itemValue="F" />
+					</p:selectOneMenu>
+
+					<h:outputLabel value="Observação" />
+					<p:inputTextarea value="#{pedidoBean.pedido.observacao}" validatorMessage="Máximo 200">
+						<f:validateLength maximum="200" />
+					</p:inputTextarea>
+				</p:panelGrid>
+
+				<p:dataTable id="dtbProduto" var="item" value="#{pedidoBean.produtos}" selection="#{pedidoBean.produtosSelecionado}" rowKey="#{item.id}" paginator="true" rows="5"
+					paginatorPosition="bottom" rowsPerPageTemplate="5,10,15">
+					<f:facet name="header">Produtos</f:facet>
+					<p:column selectionMode="multiple" style="width:18px;text-align:center;padding:0" />
+					<p:column headerText="Código" width="65">
+						<h:outputText value="#{item.id}" />
+					</p:column>
+					<p:column headerText="Descrição">
+						<h:outputText value="#{item.descricao}" />
+					</p:column>
+					<p:column headerText="Marca">
+						<h:outputText value="#{item.marca}" />
+					</p:column>
+					<p:column headerText="Preço">
+						<h:outputText id="txtPreco" value="#{item.preco}" />
+					</p:column>
+					<p:column headerText="Quantidade">
+						<h:inputText value="#{pedidoBean.quantidade}" size="3">
+							<p:ajax event="change" update="frmPrincipal-inbValor" listener="#{pedidoBean.atualizarValor(item)}" />
+						</h:inputText>
+					</p:column>
+				</p:dataTable>
+
+				<p:commandButton id="btnSalvar" icon="salvar-icon" value="Salvar" action="#{pedidoBean.salvar()}" update="frmPrincipal">
+					<span class="fa-icon-save" />
+				</p:commandButton>
+				<p:commandButton icon="voltar-icon" value="Voltar" action="#{pedidoBean.voltar()}" immediate="true" update="frmPrincipal" />
+
+				<h:outputLabel value="Valor:" />
+				<p:inputNumber id="inbValor" value="#{pedidoBean.pedido.valorTotal}" readonly="true" size="10" decimalSeparator="," thousandSeparator="."
+					inputStyle="font-weight:bold; color:red;" />
+			</p:panel>
+			<p:blockUI block="pnlCadastro" trigger="btnSalvar" />
+
+			<p:panel header="Lista de Pedido" rendered="#{pedidoBean.pedido == null}">
+				<p:commandButton value="Novo Pedido" icon="adicionar-icon" action="#{pedidoBean.adicionar()}" update="frmPrincipal" />
+
+				<p:dataTable id="dtbLista" value="#{pedidoBean.pedidos}" var="item" filteredValue="#{pedidoBean.pedidosFiltrado}" paginator="true" rows="5" paginatorPosition="bottom"
+					rowsPerPageTemplate="5,10,15">
+					<p:column headerText="Código" width="80">
+						<h:outputText value="#{item.id}" />
+					</p:column>
+					<p:column headerText="Data">
+						<h:outputText value="#{item.data}" converter="localDateTimeConverter" />
+					</p:column>
+					<p:column headerText="Entrega">
+						<h:outputText value="#{item.dataEntrega}" converter="localDateConverter" />
+					</p:column>
+					<p:column headerText="Cliente">
+						<h:outputText value="#{item.cliente.nome} #{item.cliente.sobrenome}" />
+					</p:column>
+					<p:column headerText="Situação">
+						<h:outputText value="#{item.situacao}" />
+					</p:column>
+					<p:column headerText="Valor">
+						<h:outputText value="#{item.valorTotal}" />
+					</p:column>
+					<p:column headerText="Observação">
+						<h:outputText value="#{item.observacao}" />
+					</p:column>
+					<p:column headerText="Ação" style="text-align:center;" width="150" exportable="false">
+						<p:commandButton icon="editar-icon" action="#{pedidoBean.editar(item)}" update="frmPrincipal" />
+						<p:commandButton icon="excluir-icon" style="color:red; margin-left:20px;" actionListener="#{pedidoBean.selecionarExcluir(item)}"
+							oncomplete="PF('dlgExcluir').show();" update="frmPrincipal" />
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+
+			<p:confirmDialog message="Deseja realmente excluir o pedido: #{pedidoBean.pedidoExcluir.id}?" widgetVar="dlgExcluir">
+				<p:commandButton value="Sim" update="frmPrincipal" oncomplete="PF('dlgExcluir').hide();" action="#{pedidoBean.excluir()}" />
+				<p:commandButton value="Não" oncomplete="PF('dlgExcluir').hide();" />
+			</p:confirmDialog>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

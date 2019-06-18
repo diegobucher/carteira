@@ -21,7 +21,7 @@
 	</context-param>
 	<context-param>
 		<param-name>primefaces.THEME</param-name>
-		<param-value>cruze</param-value>
+		<param-value>black-tie</param-value>
 	</context-param>
 	<context-param>
 		<param-name>javax.faces.SEPARATOR_CHAR</param-name>
@@ -31,4 +31,9 @@
 		<param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
 		<param-value>true</param-value>
 	</context-param>
+
+	<error-page>
+		<exception-type>javax.faces.application.ViewExpiredException</exception-type>
+		<location>/index.jsf</location>
+	</error-page>
 </web-app>

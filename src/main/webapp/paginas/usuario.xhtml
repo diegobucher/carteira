@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template/default.xhtml">
+	<ui:define name="titulo">Usuário</ui:define>
+	<ui:define name="content">
+
+		<h:form id="frmPrincipal" enctype="multipart/form-data">
+			<p:growl id="messages" />
+
+			<p:panel id="pnlCadastro" header="Cadastro de Usuário" style="width:600px" rendered="#{usuarioBean.usuario != null}">
+				<p:panelGrid columns="2">
+					<h:outputLabel value="Login:" />
+					<p:inputText value="#{usuarioBean.usuario.login}" required="true" requiredMessage="Campo obrigatório!" validatorMessage="Entre 3 e 15">
+						<f:validateLength minimum="3" maximum="15" />
+					</p:inputText>
+
+					<h:outputLabel value="Senha:" />
+					<p:inputText value="#{usuarioBean.usuario.senha}" required="true" requiredMessage="Campo obrigatório!" validatorMessage="Entre 6 e 15">
+						<f:validateLength minimum="6" maximum="15" />
+					</p:inputText>
+
+					<h:outputLabel value="Pessoa:" />
+					<p:selectOneMenu value="#{usuarioBean.usuario.pessoa}" converter="entityConverter" required="true" requiredMessage="Campo obrigatório!" style="width:125px">
+						<f:selectItem itemLabel="Selecione" itemValue="#{null}" />
+						<f:selectItems value="#{usuarioBean.pessoas}" var="item" itemLabel="#{item.nome} #{item.sobrenome}" itemValue="#{item}" />
+					</p:selectOneMenu>
+				</p:panelGrid>
+
+				<p:commandButton id="btnSalvar" icon="salvar-icon" value="Salvar" action="#{usuarioBean.salvar()}" update="frmPrincipal">
+					<span class="fa-icon-save" />
+				</p:commandButton>
+				<p:commandButton icon="voltar-icon" value="Voltar" action="#{usuarioBean.voltar()}" immediate="true" update="frmPrincipal" />
+			</p:panel>
+			<p:blockUI block="pnlCadastro" trigger="btnSalvar" />
+
+			<p:panel header="Lista de Usuário" rendered="#{usuarioBean.usuario == null}">
+				<p:commandButton value="Novo Usuário" icon="adicionar-icon" action="#{usuarioBean.adicionar()}" update="frmPrincipal" />
+
+				<p:dataTable id="dtbCliente" value="#{usuarioBean.usuarios}" var="item" filteredValue="#{usuarioBean.usuariosFiltrado}" paginator="true" rows="5"
+					paginatorPosition="bottom" rowsPerPageTemplate="5,10,15">
+					<p:column headerText="Código" width="150">
+						<h:outputText value="#{item.id}" />
+					</p:column>
+					<p:column headerText="Login" filterMatchMode="contains" sortBy="#{item.login}" filterBy="#{item.login}">
+						<h:outputText value="#{item.login}" />
+					</p:column>
+					<p:column headerText="Pessoa">
+						<h:outputText value="#{item.pessoa.nome} #{item.pessoa.sobrenome}" />
+					</p:column>
+
+					<p:column headerText="Ação" style="text-align:center;" width="150" exportable="false">
+						<p:commandButton icon="excluir-icon" style="color:red; margin-left:20px;" actionListener="#{usuarioBean.selecionarExcluir(item)}"
+							oncomplete="PF('dlgExcluir').show();" update="frmPrincipal" />
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+
+			<p:confirmDialog message="Deseja realmente excluir o usuário #{usuarioBean.usuarioExcluir.login}?" widgetVar="dlgExcluir">
+				<p:commandButton value="Sim" update="frmPrincipal" oncomplete="PF('dlgExcluir').hide();" action="#{usuarioBean.excluir()}" />
+				<p:commandButton value="Não" oncomplete="PF('dlgExcluir').hide();" />
+			</p:confirmDialog>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

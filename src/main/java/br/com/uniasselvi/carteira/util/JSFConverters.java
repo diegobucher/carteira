@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -16,6 +17,8 @@ import javax.faces.convert.FacesConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.component.calendar.Calendar;
 import org.primefaces.util.MessageFactory;
+
+import br.com.uniasselvi.carteira.entidade.Entidade;
 
 public class JSFConverters {
 
@@ -37,7 +40,7 @@ public class JSFConverters {
 			}
 			LocalDateTime dateValue = (LocalDateTime) value;
 			return primefacesSupport(component,
-					dateValue.format(DateTimeFormatter.ofPattern(component.getAttributes().getOrDefault("pattern", "M/d/yyyy HH:mm:ss").toString())));
+					dateValue.format(DateTimeFormatter.ofPattern(component.getAttributes().getOrDefault("pattern", "dd/MM/yyyy HH:mm:ss").toString())));
 		}
 	}
 
@@ -58,7 +61,7 @@ public class JSFConverters {
 				return (String) value;
 			}
 			LocalDate dateValue = (LocalDate) value;
-			return primefacesSupport(component, dateValue.format(DateTimeFormatter.ofPattern(component.getAttributes().getOrDefault("pattern", "M/d/yyyy").toString())));
+			return primefacesSupport(component, dateValue.format(DateTimeFormatter.ofPattern(component.getAttributes().getOrDefault("pattern", "dd/MM/yyyy").toString())));
 		}
 	}
 
@@ -77,10 +80,42 @@ public class JSFConverters {
 
 	private static DateTimeFormatter buildParser(String pattern) {
 		DateTimeFormatterBuilder dtf = new DateTimeFormatterBuilder().parseLenient();
-		dtf.appendOptional(DateTimeFormatter.ofPattern("M/dd/yy")).appendOptional(DateTimeFormatter.ofPattern("M/dd/yy HH:mm:ss"));
+		dtf.appendOptional(DateTimeFormatter.ofPattern("dd/MM/yyyy")).appendOptional(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
 		if (StringUtils.isNotBlank(pattern)) {
 			dtf.appendOptional(DateTimeFormatter.ofPattern(pattern));
 		}
-		return dtf.appendOptional(DateTimeFormatter.ofPattern("M/dd/yyyy HH:mm:ss")).appendOptional(DateTimeFormatter.ofPattern("M/dd/yyyy")).toFormatter();
+		return dtf.appendOptional(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")).appendOptional(DateTimeFormatter.ofPattern("dd/MM/yyyy")).toFormatter();
+	}
+
+	@FacesConverter(value = "entityConverter")
+	public static class EntityConverter implements Converter {
+		@Override
+		public Object getAsObject(FacesContext facesContext, UIComponent uiComponent, String value) {
+			if (value == null || !value.matches("\\d+"))
+				return null;
+
+			return this.getAttributesForm(uiComponent).get(value);
+		}
+
+		@Override
+		public String getAsString(FacesContext facesContext, UIComponent uiComponent, Object value) {
+			if (value != null && !value.equals("")) {
+				Entidade entidade = (Entidade) value;
+				if (entidade.getId() != null) {
+					this.addAttribute(uiComponent, entidade);
+					return entidade.getId().toString();
+				}
+				return value.toString();
+			}
+			return "";
+		}
+
+		private void addAttribute(UIComponent component, Entidade entidade) {
+			this.getAttributesForm(component).put(entidade.getId().toString(), entidade);
+		}
+
+		private Map<String, Object> getAttributesForm(UIComponent component) {
+			return component.getAttributes();
+		}
 	}
 }

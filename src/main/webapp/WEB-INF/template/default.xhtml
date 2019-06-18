@@ -19,19 +19,19 @@
 			<p:submenu label="Cadastro" icon="ui-icon-document">
 				<p:menuitem value="Cliente" outcome="/paginas/cliente.xhtml" />
 				<p:menuitem value="Produto" outcome="/paginas/produto.xhtml" />
-				<p:menuitem value="Pedido" />
-				<p:menuitem value="Usuário" />
+				<p:menuitem value="Pedido" outcome="/paginas/pedido.xhtml" />
+				<p:menuitem value="Usuário" outcome="/paginas/usuario.xhtml" />
 			</p:submenu>
 
-			<p:submenu label="Relatório" icon="ui-icon-clipboard">
-				<p:menuitem value="Pedido" />
+			<p:submenu label="Consulta" icon="ui-icon-clipboard">
+				<p:menuitem value="Pedido" outcome="/paginas/pedido-consulta.xhtml" />
 			</p:submenu>
 
 			<p:submenu label="Ajuda" icon="ui-icon-help">
 				<p:menuitem value="Sobre" url="#" onclick="PF('dlg').show();" />
 			</p:submenu>
 
-			<p:menuitem value="Sair" url="https://github.com/diegobucher?tab=repositories" icon="ui-icon-close" />
+			<p:menuitem value="Sair" url="/index.jsf" icon="ui-icon-close" />
 		</p:menubar>
 	</h:form>
 

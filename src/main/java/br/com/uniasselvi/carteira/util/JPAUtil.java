@@ -9,7 +9,7 @@ import javax.persistence.Persistence;
 
 public class JPAUtil {
 
-	private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("CarteiraDS");
+	private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("CarteiraPU");
 
 	@Produces
 	@RequestScoped
